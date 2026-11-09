@@ -1,0 +1,15 @@
+{
+  "format": 1,
+  "jobs": ["android-host"],
+  "profiles": [
+    {
+      "id": "any",
+      "load": {},
+      "cost": "none",
+      "regions": ["any"],
+      "compliance": [],
+      "notes": "Build-time rendering and client Kotlin code; no service is run. Publishing to Google Play needs a developer account whose cost and limits were not checked."
+    }
+  ],
+  "notes": "No provider limits are cited because the component deploys nothing."
+}

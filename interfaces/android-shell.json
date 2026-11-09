@@ -1,0 +1,76 @@
+{
+  "id": "android-shell",
+  "type": "ae/android-shell",
+  "version": "1.0.0",
+  "operations": {
+    "renderAndroid": {
+      "arguments": [
+        "settings:AndroidShellSettings",
+        "options:AndroidRenderOptions|undefined"
+      ],
+      "returns": "Record<string,string>"
+    },
+    "writeAndroid": {
+      "arguments": [
+        "directory:string",
+        "files:Record<string,string>"
+      ],
+      "returns": "void"
+    },
+    "validateSettings": {
+      "arguments": [
+        "settings:AndroidShellSettings",
+        "options:AndroidRenderOptions|undefined"
+      ],
+      "returns": "ResolvedAndroidSettings"
+    },
+    "ShellActivity": {
+      "arguments": [
+        "permissions:List<String>",
+        "language:ShellLanguage?",
+        "palette:ShellPalette",
+        "Content():@Composable"
+      ],
+      "returns": "ComponentActivity (Kotlin, abstract class the application subclasses)"
+    },
+    "ShellLanguage": {
+      "arguments": [
+        "preferencesName:String",
+        "all:List<Pair<String,String>>",
+        "fallback:String"
+      ],
+      "returns": "class with picked, pick, current and wrap (Kotlin)"
+    },
+    "resolveLanguage": {
+      "arguments": [
+        "requested:String",
+        "supported:List<String>",
+        "fallback:String"
+      ],
+      "returns": "String"
+    },
+    "chooseLanguage": {
+      "arguments": [
+        "picked:String?",
+        "systemTag:String",
+        "supported:List<String>",
+        "fallback:String"
+      ],
+      "returns": "String"
+    },
+    "parseColour": {
+      "arguments": [
+        "text:String"
+      ],
+      "returns": "Long? (0xAARRGGBB)"
+    }
+  },
+  "types": {
+    "AndroidShellSettings": "{packageId:qualified,applicationName:label,minSdk:integer 21..compileSdk}",
+    "AndroidRenderOptions": "{componentFolders?:string[],dependencies?:string[] (group:name:version),permissions?:string[],cameraOptional?:boolean,activityName?:string,orientation?:'portrait'|'landscape'|'unspecified',compileSdk?:number,projectName?:string,signingPrefix?:string,allowCleartext?:boolean}",
+    "ShellPalette": "{primary,secondary,background,surface,onPrimary: Long (0xAARRGGBB)}"
+  },
+  "requirements": {
+    "theme": "The application builds a ShellPalette from the theme's colours (parseColour reads #rrggbb text); the shell holds no colours itself. The operations used are listed in interfaces/required/theme.json."
+  }
+}

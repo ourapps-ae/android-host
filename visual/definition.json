@@ -1,0 +1,52 @@
+{
+  "id": "ourapps-ae.android-host",
+  "name": "Android host",
+  "kind": "component",
+  "status": "example",
+  "package": "ourapps-ae/android-host",
+  "version": "0.3.0",
+  "ports": [
+    {
+      "id": "theme",
+      "name": "Theme",
+      "direction": "input",
+      "kind": "interface",
+      "type": "ae/theme",
+      "version": "1.0.0",
+      "required": true,
+      "cardinality": "one"
+    },
+    {
+      "id": "android-shell",
+      "name": "Android shell",
+      "direction": "output",
+      "kind": "interface",
+      "type": "ae/android-shell",
+      "version": "1.0.0"
+    }
+  ],
+  "settings": [
+    {
+      "id": "packageId",
+      "name": "Packageid",
+      "type": "string",
+      "required": true,
+      "secret": false
+    },
+    {
+      "id": "applicationName",
+      "name": "Applicationname",
+      "type": "string",
+      "required": true,
+      "secret": false
+    },
+    {
+      "id": "minSdk",
+      "name": "Minsdk",
+      "type": "number",
+      "required": false,
+      "secret": false,
+      "default": 26
+    }
+  ]
+}

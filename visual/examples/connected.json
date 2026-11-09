@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "id": "android-host-connected",
+  "title": "Android host: connected consumer",
+  "status": "example",
+  "view": "component",
+  "focus": "component",
+  "definitions": [
+    {
+      "id": "ourapps-ae.android-host",
+      "name": "Android host",
+      "kind": "component",
+      "status": "example",
+      "package": "ourapps-ae/android-host",
+      "version": "0.3.0",
+      "ports": [
+        {
+          "id": "theme",
+          "name": "Theme",
+          "direction": "input",
+          "kind": "interface",
+          "type": "ae/theme",
+          "version": "1.0.0",
+          "required": true,
+          "cardinality": "one"
+        },
+        {
+          "id": "android-shell",
+          "name": "Android shell",
+          "direction": "output",
+          "kind": "interface",
+          "type": "ae/android-shell",
+          "version": "1.0.0"
+        }
+      ],
+      "settings": [
+        {
+          "id": "packageId",
+          "name": "Packageid",
+          "type": "string",
+          "required": true,
+          "secret": false
+        },
+        {
+          "id": "applicationName",
+          "name": "Applicationname",
+          "type": "string",
+          "required": true,
+          "secret": false
+        },
+        {
+          "id": "minSdk",
+          "name": "Minsdk",
+          "type": "number",
+          "required": false,
+          "secret": false,
+          "default": 26
+        }
+      ]
+    },
+    {
+      "id": "consumer",
+      "name": "Example application consumer",
+      "kind": "application",
+      "status": "example",
+      "revision": "0.1.0",
+      "ports": [
+        {
+          "id": "android-shell",
+          "name": "Android shell",
+          "direction": "input",
+          "kind": "interface",
+          "type": "ae/android-shell",
+          "version": "1.0.0",
+          "required": true,
+          "cardinality": "one"
+        },
+        {
+          "id": "theme",
+          "name": "Theme",
+          "direction": "output",
+          "kind": "interface",
+          "type": "ae/theme",
+          "version": "1.0.0"
+        }
+      ],
+      "settings": []
+    }
+  ],
+  "instances": [
+    {
+      "id": "component",
+      "name": "Android host",
+      "definition": "ourapps-ae.android-host",
+      "configuration": {
+        "packageId": "example",
+        "applicationName": "example"
+      }
+    },
+    {
+      "id": "consumer",
+      "name": "Example consumer",
+      "definition": "consumer",
+      "configuration": {}
+    }
+  ],
+  "connections": [
+    {
+      "source": {
+        "instance": "component",
+        "port": "android-shell"
+      },
+      "target": {
+        "instance": "consumer",
+        "port": "android-shell"
+      }
+    },
+    {
+      "source": {
+        "instance": "consumer",
+        "port": "theme"
+      },
+      "target": {
+        "instance": "component",
+        "port": "theme"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "supported": [
+    "en",
+    "fr",
+    "de",
+    "es"
+  ],
+  "fallback": "en",
+  "cases": [
+    [
+      "fr",
+      "fr"
+    ],
+    [
+      "fr-CA",
+      "fr"
+    ],
+    [
+      "de-AT",
+      "de"
+    ],
+    [
+      "es",
+      "es"
+    ],
+    [
+      "ja",
+      "en"
+    ],
+    [
+      "",
+      "en"
+    ],
+    [
+      "pt-BR",
+      "en"
+    ]
+  ]
+}

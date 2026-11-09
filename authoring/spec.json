@@ -1,0 +1,103 @@
+{
+  "name": "android-host",
+  "version": "0.3.0",
+  "title": "Android host",
+  "description": "Android Compose application shell: one activity base class (theme, language, permissions, lifecycle) and the Gradle project, manifest and launcher icon rendered from typed settings.",
+  "facilities": [
+    {
+      "id": "android-shell",
+      "description": "Android Compose application shell"
+    }
+  ],
+  "provides": [
+    {
+      "id": "android-shell",
+      "type": "ae/android-shell",
+      "version": "1.0.0",
+      "path": "interfaces/android-shell.json"
+    }
+  ],
+  "requires": [
+    {
+      "id": "theme",
+      "type": "ae/theme",
+      "version": "1.0.0",
+      "path": "interfaces/required/theme.json"
+    }
+  ],
+  "collect": [
+    {
+      "id": "packageId",
+      "type": "string",
+      "grammar": "qualified",
+      "required": true,
+      "secret": false
+    },
+    {
+      "id": "applicationName",
+      "type": "string",
+      "grammar": "label",
+      "required": true,
+      "secret": false
+    },
+    {
+      "id": "minSdk",
+      "type": "integer",
+      "grammar": "integer",
+      "required": false,
+      "secret": false,
+      "default": 26
+    }
+  ],
+  "dependencies": [],
+  "tools": {
+    "node": "26.5.0",
+    "python3": "3.12.8",
+    "kotlinc": "2.2.0",
+    "java": "26.0.1"
+  },
+  "platforms": [
+    "android"
+  ],
+  "suites": [
+    {
+      "id": "render",
+      "argv": [
+        "node",
+        "--test",
+        "tests/render.test.ts"
+      ],
+      "tools": {
+        "node": "26.5.0"
+      }
+    },
+    {
+      "id": "android",
+      "argv": [
+        "python3",
+        "tests/native.py",
+        "android"
+      ],
+      "tools": {
+        "python3": "3.12.8",
+        "kotlinc": "2.2.0",
+        "java": "26.0.1"
+      },
+      "scope": "platform",
+      "fixtures": [
+        "tests/android/Main.kt"
+      ]
+    }
+  ],
+  "text": {
+    "purpose": "The Android side of an application: one Compose activity base class (`ShellActivity`) that applies the colour palette, the chosen language and the permission request, and reports lifecycle events; a language holder (`ShellLanguage`) that remembers the pick and wraps the activity context; and the Gradle project (settings, root and application build files, wrapper properties), manifest and adaptive launcher icon rendered from typed settings. The application supplies its screens, resources and component source folders.",
+    "userInputs": "The installer collects `packageId` (lower-case words separated by dots), `applicationName` and `minSdk` (default 26). Render options (not collected) name component source folders, extra Gradle dependencies, permissions, orientation, the activity class and the signing variable prefix.",
+    "integration": "At build time call `renderAndroid(settings, options)` from `android/render.ts` and write the result with `writeAndroid` into the Android project folder. `options.componentFolders` lists the folders of other components (each with `src/main/java` and optionally `src/main/res`) compiled into the application. In Kotlin subclass `ShellActivity`, override `palette`, `Content()` and optionally `permissions`, `language` and the lifecycle hooks (`examples/MainActivity.kt`). Build with Gradle; the wrapper jar and `gradlew` scripts are not shipped, so run `gradle wrapper` once or use a local Gradle. `examples/consumer.ts` writes the project without any game.",
+    "infrastructure": "No service is deployed. Building needs a JDK 17, the Android SDK and network access to Google's Maven repository and Maven Central. Release signing reads a keystore path and passwords from environment variables named `<PREFIX>_KEYSTORE`, `<PREFIX>_KEYSTORE_PASSWORD`, `<PREFIX>_KEY_ALIAS` and `<PREFIX>_KEY_PASSWORD`, supplied by reference at release time; no signing material is stored here. Play Store publishing belongs to the release pipeline.",
+    "verification": "`node --test tests/render.test.ts` renders the fixture application and checks the Gradle files, manifest, icon files, option validation and that no signing value is written; it also checks the language rules against the same fixture as the Kotlin check. `python3 tests/native.py android` compiles the pure Kotlin sources (language choice and colour parsing) with kotlinc 2.2.0 and runs the Kotlin check on the JVM; kotlinc is not installed on the authoring machine, so that suite and the Compose activity were not compiled or run, and the generated Gradle project was not built.",
+    "scenarios": "A portrait phone application asks for camera and microphone at start and is told whether they were granted; a language picked in the application takes effect when the activity is recreated; with no pick the phone's language is used, falling back to English.",
+    "updates": "Patch updates replace the owned files; render the project again after each update, keeping any hand-edited Gradle files out of the rendered set. Removal deletes the owned sources and the rendered project files. No application data is held."
+  },
+  "agentInstructions": "Select `ourapps-ae/android-host` when the recipe's targets include `android`. Connect the `theme` requirement so the application can build its `ShellPalette`. Set `packageId`, `applicationName` and optionally `minSdk`; list the other components' `android` folders in the render options.",
+  "developerInstructions": "Supply the Android SDK location (`local.properties`, never packaged), a release keystore by reference through the signing environment variables, the application's Kotlin sources, string resources and any art. Run the render step, then `gradle wrapper` once, then `./gradlew assembleRelease`. Replace the placeholder launcher icon drawables with the application's artwork."
+}

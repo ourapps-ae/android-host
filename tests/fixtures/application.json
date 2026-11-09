@@ -1,0 +1,10 @@
+{
+  "settings": { "packageId": "app.example.demo", "applicationName": "Demo App", "minSdk": 26 },
+  "options": {
+    "componentFolders": ["../components/other/android"],
+    "dependencies": ["com.squareup.okhttp3:okhttp:4.12.0"],
+    "permissions": ["android.permission.INTERNET", "android.permission.CAMERA"],
+    "cameraOptional": true,
+    "allowCleartext": false
+  }
+}

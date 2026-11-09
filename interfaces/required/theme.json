@@ -1,0 +1,37 @@
+{
+  "id": "theme",
+  "type": "ae/theme",
+  "version": "1.0.0",
+  "notes": "What android-host reads from the theme component. The shell holds no colours: the application builds a ShellPalette from the theme palette.",
+  "operations": {
+    "ThemeSet.named": {
+      "arguments": [
+        "name:String?"
+      ],
+      "returns": "ThemeSet (Kotlin)"
+    },
+    "ThemeSet.resolved": {
+      "arguments": [
+        "primary:String?",
+        "table:String?"
+      ],
+      "returns": "ThemeSet (Kotlin)"
+    },
+    "ThemeSet.palette": {
+      "arguments": [],
+      "returns": "ThemePalette(primary,secondary,background,surface,onPrimary: Long 0xAARRGGBB); copy the five fields into ShellPalette"
+    },
+    "shellPalette": {
+      "arguments": [
+        "tokens:Tokens"
+      ],
+      "returns": "{primary,secondary,background,surface,onPrimary} numbers (build-time use, TypeScript)"
+    },
+    "parseColour": {
+      "arguments": [
+        "text:String"
+      ],
+      "returns": "Long? (0xAARRGGBB); android-host has the same function for reading #rrggbb text"
+    }
+  }
+}
