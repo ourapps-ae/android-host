@@ -35,10 +35,10 @@ Dependencies: none.
 `tools.lock.json` pins verification tools: node 26.5.0, python3 3.12.8, kotlinc 2.2.0, java 26.0.1. Licence wording remains deferred.
 
 ## Provided interfaces
-- `interfaces/android-shell.json` defines `android-shell` (ae/android-shell) version 1.0.0.
+- `interfaces/android-shell.json` defines `android-shell` (ae/android-shell) version 1.0.0 as an OpenRPC 1.3.2 document. Methods tagged `typescript` are the build-time functions of `android/render.ts` and `android/language.ts` (`renderAndroid`, `writeAndroid`, `validateSettings`, `resolveLanguage`, `chooseLanguage`); methods tagged `kotlin` are the public Kotlin API of package `ae.androidhost` (`resolveLanguage`, `chooseLanguage`, `parseColour`, `ShellPalette.toColorScheme`, `ShellActivity`, `ShellLanguage` and its methods). Parameters and results are JSON Schema 2020-12; Android values with no JSON form (Context, composables, callbacks) are described by name. `SettingsError` is listed where a setting breaks its grammar.
 
 ## Required interfaces
-- `theme` (ae/theme) version 1.0.0, supplied by the recipe or application. The operations used are listed in `interfaces/required/theme.json`: theme `ThemeSet.palette()` for the `ShellPalette`.
+- `theme` (ae/theme) version 1.0.0, supplied by the recipe or application. `interfaces/required-theme.json` is a copy of the theme component's interface document; android-host uses theme `ThemeSet.palette()` for the `ShellPalette`.
 
 ## Integration
 At build time call `renderAndroid(settings, options)` from `android/render.ts` and write the result with `writeAndroid` into the Android project folder. `options.componentFolders` lists the folders of other components (each with `src/main/java` and optionally `src/main/res`) compiled into the application. In Kotlin subclass `ShellActivity`, override `palette`, `Content()` and optionally `permissions`, `language` and the lifecycle hooks (`examples/MainActivity.kt`). Build with Gradle; the wrapper jar and `gradlew` scripts are not shipped, so run `gradle wrapper` once or use a local Gradle. `examples/consumer.ts` writes the project without any game.

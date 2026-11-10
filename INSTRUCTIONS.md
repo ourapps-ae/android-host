@@ -3,7 +3,7 @@
 ## For the agent
 Select `ourapps-ae/android-host` when the recipe's targets include `android`. Connect the `theme` requirement so the application can build its `ShellPalette`. Set `packageId`, `applicationName` and optionally `minSdk`; list the other components' `android` folders in the render options.
 
-- Select package `ourapps-ae/android-host` version `0.3.0`.
+- Select package `ourapps-ae/android-host` version `0.4.0`.
 - Settings to configure:
   - `packageId` (string, qualified; required)
   - `applicationName` (string, label; required)
@@ -14,7 +14,7 @@ Select `ourapps-ae/android-host` when the recipe's targets include `android`. Co
 
 ## For the developer
 
-- Theme: the `theme` port is described in `interfaces/required/theme.json`; feed theme `ThemeSet.palette()` into the `ShellPalette`.
+- Theme: the `theme` port is described in `interfaces/required-theme.json`; feed theme `ThemeSet.palette()` into the `ShellPalette`. The theme document is the theme component's own; the provided interface `interfaces/android-shell.json` is an OpenRPC 1.3.2 document.
 Supply the Android SDK location (`local.properties`, never packaged), a release keystore by reference through the signing environment variables, the application's Kotlin sources, string resources and any art. Run the render step, then `gradle wrapper` once, then `./gradlew assembleRelease`. Replace the placeholder launcher icon drawables with the application's artwork.
 
 ## How to check
