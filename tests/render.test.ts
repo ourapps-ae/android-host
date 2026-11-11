@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mkdtempSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fill, renderAndroid, renderManifest, signingPrefix, SettingsError, validateSettings } from "../implementation/android/render.ts";
@@ -49,9 +49,22 @@ test("manifest has the permissions, the activity and the label placeholder", () 
   assert.match(renderManifest(validateSettings(settings), { allowCleartext: true, activityName: "app.example.demo.Start", orientation: "unspecified" }), /usesCleartextTraffic="true"[\s\S]*android:name="app.example.demo.Start"[\s\S]*unspecified/);
 });
 
+test("the Kotlin serialization plugin is applied only when asked for", () => {
+  assert.match(renderAndroid(settings, { ...options, kotlinSerialization: true })["app/build.gradle.kts"], /\n    id\("org.jetbrains.kotlin.plugin.serialization"\)\n\}/);
+  assert.match(files["build.gradle.kts"], /id\("org.jetbrains.kotlin.plugin.serialization"\) version "2.3.20" apply false/);
+});
+
+test("settings.ts is rendered by aepm at install from every setting", { skip: !existsSync(new URL("../component.json", import.meta.url)) && "component.json is not in this copy" }, () => {
+  const manifest = JSON.parse(readFileSync(new URL("../component.json", import.meta.url), "utf8"));
+  assert.deepEqual(manifest.artefacts.find((item: { source: string }) => item.source === "implementation/android/settings.ts"),
+    { source: "implementation/android/settings.ts", destination: "components/android-host/android/settings.ts", template: true, executable: false });
+  const text = readFileSync(new URL("../implementation/android/settings.ts", import.meta.url), "utf8");
+  assert.deepEqual([...text.matchAll(/\{\{([A-Za-z]+)\}\}/g)].map((match) => match[1]), manifest.collect.map((item: { id: string }) => item.id));
+});
+
 test("optional parts are left out when not asked for", () => {
   const plain = renderAndroid(settings, {});
-  assert.doesNotMatch(plain["app/build.gradle.kts"], /listOf\(|okhttp/);
+  assert.doesNotMatch(plain["app/build.gradle.kts"], /listOf\(|okhttp|plugin.serialization/);
   assert.doesNotMatch(plain["app/src/main/AndroidManifest.xml"], /uses-permission|uses-feature/);
 });
 

@@ -17,6 +17,7 @@ The installer collects `packageId` (lower-case words separated by dots), `applic
 
 - `implementation/android/language.ts` -> `components/android-host/android/language.ts`
 - `implementation/android/render.ts` -> `components/android-host/android/render.ts`
+- `implementation/android/settings.ts` -> `components/android-host/android/settings.ts` (template: aepm renders `androidHostSettings` from the three settings)
 - `implementation/android/src/main/java/ae/androidhost/LanguageChoice.kt` -> `components/android-host/android/src/main/java/ae/androidhost/LanguageChoice.kt`
 - `implementation/android/src/main/java/ae/androidhost/ShellActivity.kt` -> `components/android-host/android/src/main/java/ae/androidhost/ShellActivity.kt`
 - `implementation/android/src/main/java/ae/androidhost/ShellLanguage.kt` -> `components/android-host/android/src/main/java/ae/androidhost/ShellLanguage.kt`
@@ -41,7 +42,7 @@ Dependencies: none.
 - `theme` (ae/theme) version 1.0.0, supplied by the recipe or application. `interfaces/required-theme.json` is a copy of the theme component's interface document; android-host uses theme `ThemeSet.palette()` for the `ShellPalette`.
 
 ## Integration
-At build time call `renderAndroid(settings, options)` from `android/render.ts` and write the result with `writeAndroid` into the Android project folder. `options.componentFolders` lists the folders of other components (each with `src/main/java` and optionally `src/main/res`) compiled into the application. In Kotlin subclass `ShellActivity`, override `palette`, `Content()` and optionally `permissions`, `language` and the lifecycle hooks (`examples/MainActivity.kt`). Build with Gradle; the wrapper jar and `gradlew` scripts are not shipped, so run `gradle wrapper` once or use a local Gradle. `examples/consumer.ts` writes the project without any game.
+In an installed application, `settings` is `androidHostSettings` from the rendered `android/settings.ts`; `options.kotlinSerialization` applies the Kotlin serialization compiler plugin. At build time call `renderAndroid(settings, options)` from `android/render.ts` and write the result with `writeAndroid` into the Android project folder. `options.componentFolders` lists the folders of other components (each with `src/main/java` and optionally `src/main/res`) compiled into the application. In Kotlin subclass `ShellActivity`, override `palette`, `Content()` and optionally `permissions`, `language` and the lifecycle hooks (`examples/MainActivity.kt`). Build with Gradle; the wrapper jar and `gradlew` scripts are not shipped, so run `gradle wrapper` once or use a local Gradle. `examples/consumer.ts` writes the project without any game.
 
 ## Visual definition and connected examples
 `visual/definition.json` maps its ports to the provided and required interfaces. `visual/examples/connected.json` connects the component to an illustrative application consumer. Both image formats and a text description are in `visual/output/`.

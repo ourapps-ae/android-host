@@ -13,6 +13,12 @@
       "template": false
     },
     {
+      "destination": "components/android-host/android/settings.ts",
+      "executable": false,
+      "source": "implementation/android/settings.ts",
+      "template": true
+    },
+    {
       "destination": "components/android-host/android/src/main/java/ae/androidhost/LanguageChoice.kt",
       "executable": false,
       "source": "implementation/android/src/main/java/ae/androidhost/LanguageChoice.kt",
@@ -97,6 +103,7 @@
     "writes": [
       "components/android-host/android/language.ts",
       "components/android-host/android/render.ts",
+      "components/android-host/android/settings.ts",
       "components/android-host/android/src/main/java/ae/androidhost/LanguageChoice.kt",
       "components/android-host/android/src/main/java/ae/androidhost/ShellActivity.kt",
       "components/android-host/android/src/main/java/ae/androidhost/ShellLanguage.kt",
@@ -192,6 +199,10 @@
     {
       "executable": false,
       "path": "implementation/android/render.ts"
+    },
+    {
+      "executable": false,
+      "path": "implementation/android/settings.ts"
     },
     {
       "executable": false,

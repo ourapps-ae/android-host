@@ -26,6 +26,8 @@ export interface AndroidRenderOptions {
   // Prefix of the environment variables that carry the signing keystore, by reference (default: packageId's last word in capitals).
   signingPrefix?: string;
   allowCleartext?: boolean;
+  // Applies the Kotlin serialization compiler plugin (for @Serializable classes).
+  kotlinSerialization?: boolean;
 }
 
 export class SettingsError extends Error {}
@@ -84,6 +86,7 @@ export function renderAppBuild(settings: ResolvedAndroidSettings, options: Andro
   return fill(template("app.build.gradle.kts"), {
     packageId: settings.packageId, applicationName: settings.applicationName, minSdk: settings.minSdk, compileSdk: settings.compileSdk,
     signingPrefix: options.signingPrefix ?? signingPrefix(settings.packageId), componentSourceSets: sourceSets, dependencies,
+    plugins: options.kotlinSerialization ? '    id("org.jetbrains.kotlin.plugin.serialization")\n' : "",
   });
 }
 
