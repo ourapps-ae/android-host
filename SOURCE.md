@@ -1,6 +1,6 @@
 # Source mapping
 
-Reference revision: `19905b75dbea89fbfd424d67fe26c81aaed0e018`. Recipe paths are under `OurPoker/recipe/android/`.
+Reference revision: `19905b75dbea89fbfd424d67fe26c81aaed0e018`. Recipe paths are under `recipe/android/` in `ourapps-ae/OurPoker`.
 
 - `app/src/main/java/app/ourapps/ourpoker/MainActivity.kt` lines 43-88 (the activity, language wrap, sound start-up, permission request, resume and pause hooks, `PokerColors`) -> `implementation/android/src/main/java/ae/androidhost/ShellActivity.kt` and `ShellPalette.kt`: the activity becomes an abstract `ShellActivity` with `permissions`, `language`, `palette`, `Content()` and lifecycle hooks; the hard-coded camera and microphone pair, `Sound.init`, `TableViewModel` calls and the dark scheme colours become overridable members and a `ShellPalette` of numeric colours (with `parseColour` as an addition). Lines 90-137 (`Root`: screens, guides, help bulb, beginner dialog) are poker screens and stay with the recipe.
 - `app/src/main/java/app/ourapps/ourpoker/AppLanguage.kt` lines 11-31 -> `implementation/android/src/main/java/ae/androidhost/ShellLanguage.kt` and `LanguageChoice.kt`: the fixed list of four languages, the `ourpoker` preferences name and the call into `ae.i18n.selectLanguage` become constructor arguments and a local `resolveLanguage` (same rule: exact tag, base language, fallback), so the component does not depend on the translations component. `implementation/android/language.ts` repeats the rule for build tools and tests (`generated-platform`).

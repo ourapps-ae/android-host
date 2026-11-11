@@ -33,7 +33,7 @@ The installer collects `packageId` (lower-case words separated by dots), `applic
 - `implementation/android/templates/settings.gradle.kts.template` -> `components/android-host/android/templates/settings.gradle.kts.template`
 
 Dependencies: none.
-`tools.lock.json` pins verification tools: node 26.5.0, python3 3.12.8, kotlinc 2.2.0, java 26.0.1. Licence wording remains deferred.
+`tools.lock.json` pins verification tools: node 26.5, python3 3.12, kotlinc 2.2, java 26.0. Licence wording remains deferred.
 
 ## Provided interfaces
 - `interfaces/android-shell.json` defines `android-shell` (ae/android-shell) version 1.0.0 as an OpenRPC 1.3.2 document. Methods tagged `typescript` are the build-time functions of `android/render.ts` and `android/language.ts` (`renderAndroid`, `writeAndroid`, `validateSettings`, `resolveLanguage`, `chooseLanguage`); methods tagged `kotlin` are the public Kotlin API of package `ae.androidhost` (`resolveLanguage`, `chooseLanguage`, `parseColour`, `ShellPalette.toColorScheme`, `ShellActivity`, `ShellLanguage` and its methods). Parameters and results are JSON Schema 2020-12; Android values with no JSON form (Context, composables, callbacks) are described by name. `SettingsError` is listed where a setting breaks its grammar.
@@ -51,10 +51,10 @@ In an installed application, `settings` is `androidHostSettings` from the render
 No service is deployed. Building needs a JDK 17, the Android SDK and network access to Google's Maven repository and Maven Central. Release signing reads a keystore path and passwords from environment variables named `<PREFIX>_KEYSTORE`, `<PREFIX>_KEYSTORE_PASSWORD`, `<PREFIX>_KEY_ALIAS` and `<PREFIX>_KEY_PASSWORD`, supplied by reference at release time; no signing material is stored here. Play Store publishing belongs to the release pipeline.
 
 ## Verification
-`node --test tests/render.test.ts` renders the fixture application and checks the Gradle files, manifest, icon files, option validation and that no signing value is written; it also checks the language rules against the same fixture as the Kotlin check. `python3 tests/native.py android` compiles the pure Kotlin sources (language choice and colour parsing) with kotlinc 2.2.0 and runs the Kotlin check on the JVM; kotlinc is not installed on the authoring machine, so that suite and the Compose activity were not compiled or run, and the generated Gradle project was not built.
+`node --test tests/render.test.ts` renders the fixture application and checks the Gradle files, manifest, icon files, option validation and that no signing value is written; it also checks the language rules against the same fixture as the Kotlin check. `python3 tests/native.py android` compiles the pure Kotlin sources (language choice and colour parsing) with kotlinc 2.2 and runs the Kotlin check on the JVM; kotlinc is not installed on the authoring machine, so that suite and the Compose activity were not compiled or run, and the generated Gradle project was not built.
 
-- `node --test tests/render.test.ts` (render, required-local; tools: node 26.5.0)
-- `python3 tests/native.py android` (android, platform; tools: python3 3.12.8, kotlinc 2.2.0, java 26.0.1)
+- `node --test tests/render.test.ts` (render, required-local; tools: node 26.5)
+- `python3 tests/native.py android` (android, platform; tools: python3 3.12, kotlinc 2.2, java 26.0)
 
 ## Scenarios and presentation
 A portrait phone application asks for camera and microphone at start and is told whether they were granted; a language picked in the application takes effect when the activity is recreated; with no pick the phone's language is used, falling back to English.
