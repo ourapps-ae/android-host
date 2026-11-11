@@ -3,7 +3,7 @@
 ## For the agent
 Select `ourapps-ae/android-host` when the recipe's targets include `android`. Connect the `theme` requirement so the application can build its `ShellPalette`. Set `packageId`, `applicationName` and optionally `minSdk`; list the other components' `android` folders in the render options.
 
-- Select package `ourapps-ae/android-host` version `0.4.0`.
+- Select package `ourapps-ae/android-host` version `0.4.1`.
 - Settings to configure:
   - `packageId` (string, qualified; required)
   - `applicationName` (string, label; required)
