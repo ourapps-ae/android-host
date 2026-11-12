@@ -15,7 +15,7 @@ Select `ourapps-ae/android-host` when the recipe's targets include `android`. Co
 ## For the developer
 
 - Theme: the `theme` port is described in `interfaces/required-theme.json`; feed theme `ThemeSet.palette()` into the `ShellPalette`. The theme document is the theme component's own; the provided interface `interfaces/android-shell.json` is an OpenRPC 1.3.2 document.
-Supply the Android SDK location (`local.properties`, never packaged), a release keystore by reference through the signing environment variables, the application's Kotlin sources, string resources and any art. Run the render step, then `gradle wrapper` once, then `./gradlew assembleRelease`. Replace the placeholder launcher icon drawables with the application's artwork.
+Supply the Android SDK location (`local.properties`, never packaged), a release keystore by reference through the signing environment variables, the application's Kotlin sources, string resources and any art. Run the render step and `writeWrapper`, then `./gradlew assembleRelease -PversionName=<version>`. Replace the placeholder launcher icon drawables with the application's artwork.
 
 ## How to check
 From the component directory:

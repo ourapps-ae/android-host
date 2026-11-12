@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { chmodSync, copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 // Build-time rendering of the Android Gradle project files from typed settings.
@@ -14,6 +14,8 @@ export interface AndroidRenderOptions {
   componentFolders?: string[];
   // Gradle dependency coordinates added to the application, for example "com.squareup.okhttp3:okhttp:4.12.0".
   dependencies?: string[];
+  // Gradle dependency coordinates for the unit tests (src/test), for example "junit:junit:4.13.2".
+  testDependencies?: string[];
   // Android permission names such as "android.permission.INTERNET".
   permissions?: string[];
   // Declares the camera as optional hardware (for applications that ask for CAMERA).
@@ -28,6 +30,10 @@ export interface AndroidRenderOptions {
   allowCleartext?: boolean;
   // Applies the Kotlin serialization compiler plugin (for @Serializable classes).
   kotlinSerialization?: boolean;
+  // Extra Maven repositories (https addresses) for dependencies, for example "https://jitpack.io".
+  repositories?: string[];
+  // String BuildConfig fields, each overridable at build time with a Gradle property (`./gradlew -P<property>=<value>`).
+  buildConfigStrings?: { name: string; property: string; value: string }[];
 }
 
 export class SettingsError extends Error {}
@@ -65,11 +71,13 @@ const template = (name: string) => readFileSync(new URL(`./templates/${name}.tem
 
 function checkOptions(options: AndroidRenderOptions): void {
   for (const folder of options.componentFolders ?? []) if (!/^(\.\.\/)*[A-Za-z0-9_][A-Za-z0-9_./-]*$/.test(folder) || folder.includes("/../")) throw new SettingsError(`component folder ${folder} must be a plain relative path`);
-  for (const dependency of options.dependencies ?? []) if (!/^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+:[A-Za-z0-9_.+-]+$/.test(dependency)) throw new SettingsError(`dependency ${dependency} must be group:name:version`);
+  for (const dependency of [...(options.dependencies ?? []), ...(options.testDependencies ?? [])]) if (!/^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+:[A-Za-z0-9_.+-]+$/.test(dependency)) throw new SettingsError(`dependency ${dependency} must be group:name:version`);
   for (const permission of options.permissions ?? []) if (!/^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+$/.test(permission)) throw new SettingsError(`permission ${permission} is not a permission name`);
   if (options.activityName !== undefined && !/^\.?[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)*$/.test(options.activityName)) throw new SettingsError("activityName must be a class name");
   if (options.signingPrefix !== undefined && !/^[A-Z][A-Z0-9_]{0,63}$/.test(options.signingPrefix)) throw new SettingsError("signingPrefix must be capitals, digits and underscores");
   if (options.projectName !== undefined && !LABEL.test(options.projectName)) throw new SettingsError("projectName must be a label");
+  for (const f of options.buildConfigStrings ?? []) if (!/^[A-Z][A-Z0-9_]*$/.test(f.name) || !/^[a-z][A-Za-z0-9]*$/.test(f.property) || !/^[A-Za-z0-9:\/._-]*$/.test(f.value)) throw new SettingsError(`build config field ${f.name} needs a capitalised name, a camelCase property and a plain value`);
+  for (const url of options.repositories ?? []) if (!/^https:\/\/[A-Za-z0-9.-]+(\/[A-Za-z0-9._\/-]*)?$/.test(url)) throw new SettingsError(`repository ${url} must be an https address`);
   if (options.orientation !== undefined && !["portrait", "landscape", "unspecified"].includes(options.orientation)) throw new SettingsError("orientation must be portrait, landscape or unspecified");
 }
 
@@ -82,10 +90,12 @@ export function renderAppBuild(settings: ResolvedAndroidSettings, options: Andro
       '        sourceSets.getByName("main").res.srcDir("../$folder/src/main/res")',
       "    }"].join("\n") + "\n"
     : "";
-  const dependencies = (options.dependencies ?? []).map((dependency) => `    implementation(${JSON.stringify(dependency)})\n`).join("");
+  const dependencies = (options.dependencies ?? []).map((dependency) => `    implementation(${JSON.stringify(dependency)})\n`).join("")
+    + (options.testDependencies ?? []).map((dependency) => `    testImplementation(${JSON.stringify(dependency)})\n`).join("");
   return fill(template("app.build.gradle.kts"), {
     packageId: settings.packageId, applicationName: settings.applicationName, minSdk: settings.minSdk, compileSdk: settings.compileSdk,
     signingPrefix: options.signingPrefix ?? signingPrefix(settings.packageId), componentSourceSets: sourceSets, dependencies,
+    buildConfigFields: (options.buildConfigStrings ?? []).map((f) => `        buildConfigField("String", "${f.name}", "\\"\${(findProperty("${f.property}") as String?) ?: "${f.value}"}\\"")\n`).join(""),
     plugins: options.kotlinSerialization ? '    id("org.jetbrains.kotlin.plugin.serialization")\n' : "",
   });
 }
@@ -110,7 +120,10 @@ export function renderAndroid(settings: AndroidShellSettings, options: AndroidRe
   const resolved = validateSettings(settings, options);
   checkOptions(options);
   return {
-    "settings.gradle.kts": fill(template("settings.gradle.kts"), { projectName: options.projectName ?? settings.applicationName }),
+    "settings.gradle.kts": fill(template("settings.gradle.kts"), {
+      projectName: options.projectName ?? settings.applicationName,
+      repositories: (options.repositories ?? []).map((url) => `        maven(${JSON.stringify(url)})\n`).join(""),
+    }),
     "build.gradle.kts": template("build.gradle.kts"),
     "gradle.properties": template("gradle.properties"),
     "gradle/wrapper/gradle-wrapper.properties": template("gradle/wrapper/gradle-wrapper.properties"),
@@ -128,4 +141,15 @@ export function writeAndroid(directory: string, files: Record<string, string>): 
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, text);
   }
+}
+
+// The Gradle wrapper (gradlew, gradlew.bat and gradle/wrapper/gradle-wrapper.jar, Gradle 9.4.0 as gradle-wrapper.properties
+// names), copied into the Android project folder so `./gradlew` builds it with no Gradle installed.
+export function writeWrapper(directory: string): void {
+  for (const path of ["gradlew", "gradlew.bat", "gradle/wrapper/gradle-wrapper.jar"]) {
+    const target = join(directory, path);
+    mkdirSync(dirname(target), { recursive: true });
+    copyFileSync(new URL(`./wrapper/${path}`, import.meta.url), target);
+  }
+  chmodSync(join(directory, "gradlew"), 0o755);
 }

@@ -9,6 +9,7 @@ Reference revision: `19905b75dbea89fbfd424d67fe26c81aaed0e018`. Recipe paths are
 - `app/src/main/AndroidManifest.xml` lines 1-29 -> `templates/AndroidManifest.xml.template` and `render.ts`: permissions, camera feature, cleartext traffic, activity class and orientation become options; the application label stays the `${applicationName}` placeholder.
 - `app/src/main/res/drawable/ic_launcher_background.xml` and `ic_launcher_foreground.xml` -> `templates/app/src/main/res/drawable/`: the poker card artwork is kept as a placeholder icon; the adaptive icon file (`templates/ic_launcher.xml.template`) is the one `syncArt` wrote at lines 37-43, now fixed to the two drawables.
 - `implementation/android/settings.ts` is new (`generated-platform`): the template aepm renders at install. The `kotlinSerialization` option takes the serialization plugin lines of the recipe's `build.gradle.kts` files.
-- `implementation/android/render.ts` is new (settings validation, template filler, `renderAndroid`/`writeAndroid`).
+- `implementation/android/render.ts` is new (settings validation, template filler, `renderAndroid`/`writeAndroid`/`writeWrapper`).
+- `implementation/android/wrapper/` is the recipe's Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/gradle-wrapper.jar`), unchanged.
 
 Left behind: `gradlew`, `gradlew.bat` and `gradle-wrapper.jar` (binary and script), `gradle.lockfile`, `gradle/verification-metadata.xml`, `INSTRUMENTATION.md`, all screens, `TableViewModel.kt`, `Sound.kt`, the `net` package, string resources and sounds, and the tests under `app/src/test` and `app/src/androidTest`.

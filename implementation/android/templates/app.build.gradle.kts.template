@@ -24,7 +24,7 @@ android {
         targetSdk = {{compileSdk}}
         versionCode = versionCodeProp
         versionName = versionNameProp
-    }
+{{buildConfigFields}}    }
 
     signingConfigs {
         if (keystorePath != null) {

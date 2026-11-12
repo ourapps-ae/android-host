@@ -95,6 +95,24 @@
       "executable": false,
       "source": "implementation/android/templates/settings.gradle.kts.template",
       "template": false
+    },
+    {
+      "destination": "components/android-host/android/wrapper/gradle/wrapper/gradle-wrapper.jar",
+      "executable": false,
+      "source": "implementation/android/wrapper/gradle/wrapper/gradle-wrapper.jar",
+      "template": false
+    },
+    {
+      "destination": "components/android-host/android/wrapper/gradlew",
+      "executable": true,
+      "source": "implementation/android/wrapper/gradlew",
+      "template": false
+    },
+    {
+      "destination": "components/android-host/android/wrapper/gradlew.bat",
+      "executable": false,
+      "source": "implementation/android/wrapper/gradlew.bat",
+      "template": false
     }
   ],
   "capabilities": {
@@ -116,7 +134,10 @@
       "components/android-host/android/templates/gradle.properties.template",
       "components/android-host/android/templates/gradle/wrapper/gradle-wrapper.properties.template",
       "components/android-host/android/templates/ic_launcher.xml.template",
-      "components/android-host/android/templates/settings.gradle.kts.template"
+      "components/android-host/android/templates/settings.gradle.kts.template",
+      "components/android-host/android/wrapper/gradle/wrapper/gradle-wrapper.jar",
+      "components/android-host/android/wrapper/gradlew",
+      "components/android-host/android/wrapper/gradlew.bat"
     ]
   },
   "collect": [
@@ -255,6 +276,18 @@
     {
       "executable": false,
       "path": "implementation/android/templates/settings.gradle.kts.template"
+    },
+    {
+      "executable": false,
+      "path": "implementation/android/wrapper/gradle/wrapper/gradle-wrapper.jar"
+    },
+    {
+      "executable": true,
+      "path": "implementation/android/wrapper/gradlew"
+    },
+    {
+      "executable": false,
+      "path": "implementation/android/wrapper/gradlew.bat"
     },
     {
       "executable": false,

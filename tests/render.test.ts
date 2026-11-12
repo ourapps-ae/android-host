@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { fill, renderAndroid, renderManifest, signingPrefix, SettingsError, validateSettings } from "../implementation/android/render.ts";
+import { fill, renderAndroid, renderManifest, signingPrefix, SettingsError, validateSettings, writeWrapper } from "../implementation/android/render.ts";
 import { chooseLanguage, resolveLanguage } from "../implementation/android/language.ts";
 import { buildProject } from "../examples/consumer.ts";
 
@@ -62,9 +62,25 @@ test("settings.ts is rendered by aepm at install from every setting", { skip: !e
   assert.deepEqual([...text.matchAll(/\{\{([A-Za-z]+)\}\}/g)].map((match) => match[1]), manifest.collect.map((item: { id: string }) => item.id));
 });
 
+test("repositories, test dependencies and build config strings are rendered", () => {
+  const rendered = renderAndroid(settings, { repositories: ["https://jitpack.io"], testDependencies: ["junit:junit:4.13.2"],
+    buildConfigStrings: [{ name: "SERVER_URL", property: "serverUrl", value: "https://play.example.app" }] });
+  assert.match(rendered["settings.gradle.kts"], /mavenCentral\(\)\n        maven\("https:\/\/jitpack.io"\)\n    \}/);
+  assert.match(rendered["app/build.gradle.kts"], /testImplementation\("junit:junit:4.13.2"\)/);
+  assert.match(rendered["app/build.gradle.kts"], /buildConfigField\("String", "SERVER_URL", "\\"\$\{\(findProperty\("serverUrl"\) as String\?\) \?: "https:\/\/play.example.app"\}\\""\)/);
+});
+
+test("the wrapper is copied with an executable gradlew", () => {
+  const directory = mkdtempSync(join(tmpdir(), "android-wrapper-"));
+  writeWrapper(directory);
+  for (const path of ["gradlew", "gradlew.bat", "gradle/wrapper/gradle-wrapper.jar"]) assert.ok(statSync(join(directory, path)).size > 0, path);
+  assert.ok(statSync(join(directory, "gradlew")).mode & 0o100);
+});
+
 test("optional parts are left out when not asked for", () => {
   const plain = renderAndroid(settings, {});
-  assert.doesNotMatch(plain["app/build.gradle.kts"], /listOf\(|okhttp|plugin.serialization/);
+  assert.doesNotMatch(plain["app/build.gradle.kts"], /listOf\(|okhttp|plugin.serialization|testImplementation|buildConfigField/);
+  assert.doesNotMatch(plain["settings.gradle.kts"], /maven\(/);
   assert.doesNotMatch(plain["app/src/main/AndroidManifest.xml"], /uses-permission|uses-feature/);
 });
 
@@ -90,6 +106,12 @@ test("options that could inject text are refused", () => {
   bad({ activityName: "bad name" });
   bad({ signingPrefix: "lower" });
   bad({ orientation: "sideways" });
+  bad({ testDependencies: ["junit"] });
+  bad({ repositories: ["http://jitpack.io"] });
+  bad({ repositories: ['https://x.io") ; evil("'] });
+  bad({ buildConfigStrings: [{ name: "server", property: "serverUrl", value: "x" }] });
+  bad({ buildConfigStrings: [{ name: "SERVER", property: "server-url", value: "x" }] });
+  bad({ buildConfigStrings: [{ name: "SERVER", property: "serverUrl", value: 'x"; evil' }] });
 });
 
 test("signing prefix defaults to the last word of the package id", () => {
