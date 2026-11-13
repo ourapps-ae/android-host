@@ -1,6 +1,6 @@
 {
   "name": "android-host",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "title": "Android host",
   "description": "Android Compose application shell: one activity base class (theme, language, permissions, lifecycle) and the Gradle project, manifest and launcher icon rendered from typed settings.",
   "facilities": [
