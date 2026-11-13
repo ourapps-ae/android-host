@@ -113,6 +113,12 @@
       "executable": false,
       "source": "implementation/android/wrapper/gradlew.bat",
       "template": false
+    },
+    {
+      "destination": "components/android-host/server/index.ts",
+      "executable": false,
+      "source": "implementation/server/index.ts",
+      "template": false
     }
   ],
   "capabilities": {
@@ -137,7 +143,8 @@
       "components/android-host/android/templates/settings.gradle.kts.template",
       "components/android-host/android/wrapper/gradle/wrapper/gradle-wrapper.jar",
       "components/android-host/android/wrapper/gradlew",
-      "components/android-host/android/wrapper/gradlew.bat"
+      "components/android-host/android/wrapper/gradlew.bat",
+      "components/android-host/server/index.ts"
     ]
   },
   "collect": [
@@ -288,6 +295,10 @@
     {
       "executable": false,
       "path": "implementation/android/wrapper/gradlew.bat"
+    },
+    {
+      "executable": false,
+      "path": "implementation/server/index.ts"
     },
     {
       "executable": false,
